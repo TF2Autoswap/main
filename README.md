@@ -5,6 +5,8 @@
 A guided Python pipeline for client-side TF2 cosmetic and weapon model swapping. Handles asset lookup, safety checks, and VPK or native addon output automatically. Free to use — requires Python 3.8+.
 
 Changes are visible only to you. No game files are permanently modified.
+TF2 AutoSwap is a fan-made project and is not affiliated with Valve or Team Fortress 2.
+
 
 ---
 
