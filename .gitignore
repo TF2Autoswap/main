@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Testing artifacts
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.json
+
+# Build artifacts
+*.vpk
+output/
+
+# Runtime state
+.tf2autoswap/
+tf2autoswap.log
+
+# AI assistant artifacts
+.aider*
+
+# Test artifacts
+yes/
