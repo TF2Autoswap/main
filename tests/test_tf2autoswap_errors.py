@@ -459,18 +459,6 @@ class TestWeaponSpecificErrors:
             # Should return None or empty string for missing worldmodel
             assert result is None or result == "" or isinstance(result, str)
 
-    def test_decorated_weapon_catalog_missing(self):
-        """Missing decorated_weapons_catalog.json returns None"""
-        with patch('os.path.isfile', return_value=False):
-            result = cli.load_decorated_weapons_catalog()
-            assert result is None
-
-    def test_decorated_weapon_catalog_invalid_json(self):
-        """Invalid JSON in decorated weapons catalog returns None"""
-        with patch('builtins.open', mock_open(read_data="{invalid json")):
-            with patch('os.path.isfile', return_value=True):
-                result = cli.load_decorated_weapons_catalog()
-                assert result is None
 
     def test_weapon_warning_with_empty_index(self):
         """weapon_warning handles empty index gracefully"""

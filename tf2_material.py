@@ -87,7 +87,6 @@ except ImportError:
 
 _ALLOWED_ROOTS = (
     "materials/models/weapons/",            # weapon viewmodels + worldmodels
-    "materials/models/paintkits/",          # decorated weapon per-variant VMTs
     "materials/models/player/items/",       # cosmetics (hats, miscs)
     "materials/models/workshop/weapons/",   # workshop-imported weapons
     "materials/models/workshop/player/items/",  # workshop cosmetics
@@ -157,8 +156,8 @@ def classify_material_path(archive_path):
 
     for root in _ALLOWED_ROOTS:
         if p.startswith(root):
-            # paintkits/ and weapons/ are both weapon materials
-            return "weapon" if ("weapons/" in root or "paintkits/" in root) else "cosmetic"
+            # weapons/ are weapon materials
+            return "weapon" if "weapons/" in root else "cosmetic"
 
     if p.startswith("materials/models/props_") or p.startswith("materials/props"):
         return "prop"

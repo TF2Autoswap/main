@@ -49,8 +49,8 @@ warnings also require tf2_schema.py and the 'vdf' library (both optional —
 the tool still works without them, but shows internal path names instead of
 friendly names and cannot warn about problematic swaps). Skin/material swaps
 and map prop swaps additionally require tf2_material.py — optional in the
-same way; without it, those three menu options (skin, prop, decorated
-weapon swaps) and CLI flags simply don't appear, and the rest of the
+same way; without it, menu options (skin and prop swaps)
+and CLI flags simply don't appear, and the rest of the
 tool runs exactly as before.
 """
 
@@ -91,7 +91,7 @@ VERSION = "4.8"
 # One-line description of what changed in this release. Shown in the
 # interactive menu header so returning users can see at a glance what is new.
 # Update this string with each release.
-WHATS_NEW = "Decorated weapon swaps + prop size checking + material transport + organised imports"
+WHATS_NEW = "Prop size checking + material transport + organised imports"
 
 # A unique string appended to every output filename. This makes files created
 # by this tool identifiable in the Casual Preloader's addons folder and
@@ -1491,470 +1491,6 @@ def interactive_weapon_swap(pak, index, defindex_index, preloader_dir, owned_ite
         emit_weapon_vpk(view_files, world_files, dst_view_base, dst_world_base, os.path.join(OUTPUT_DIR, fname), src_label, target_label, world_note, material_files)
 
 
-# ---------- interactive: decorated weapon swap ----------
-
-# Weapon to class(es) mapping for the decorated weapon class picker.
-#
-# Each value is a list of classes that can equip that weapon. Multi-class
-# weapons (shotgun, pistol) appear under every class that carries them so
-# e.g. Heavy players can find their decorated Shotgun under Heavy, not just
-# Soldier. The grouping logic in interactive_decorated_weapon_swap() adds
-# each weapon to every class in its list.
-WEAPON_CLASS_MAP = {
-    "scattergun":          ["scout"],
-    "pistol":              ["scout", "engineer"],
-    "rocketlauncher":      ["soldier"],
-    "shotgun":             ["soldier", "pyro", "heavy", "engineer"],
-    "flamethrower":        ["pyro"],
-    "grenadelauncher":     ["demoman"],
-    "stickybomb_launcher": ["demoman"],
-    "minigun":             ["heavy"],
-    "wrench":              ["engineer"],
-    "medigun":             ["medic"],
-    "sniperrifle":         ["sniper"],
-    "smg":                 ["sniper"],
-    "revolver":            ["spy"],
-    "knife":               ["spy"],
-}
-
-# Skin slug -> display name mapping for decorated weapon VTF filenames.
-# Slugs are the suffix of each file after {collection}_{weapon}_  e.g.
-# powerhouse_minigun_brickhouse.vtf -> slug "brickhouse" -> "Brick House".
-SKIN_SLUG_NAMES = {
-    # Concealed Killer collection
-    "nightowl": "Night Owl", "woodsywidowmaker": "Woodsy Widowmaker",
-    "nightterror": "Night Terror", "backwoodsboomstick": "Backwoods Boomstick",
-    "kingofthejungle": "King of the Jungle", "forestfire": "Forest Fire",
-    "woodlandwarrior": "Woodland Warrior", "purplerange": "Purple Range",
-    "maskedmender": "Masked Mender", "suddenflurry": "Sudden Flurry",
-    "wrappedreviver": "Wrapped Reviver", "psychedelicslugger": "Psychedelic Slugger",
-    "carpetbomber": "Carpet Bomber", "redrockroscoe": "Red Rock Roscoe",
-    "sandcannon": "Sand Cannon",
-    # Craftsmann collection
-    "tartantorpedo": "Tartan Torpedo", "rusticruiner": "Rustic Ruiner",
-    "barnburner": "Barn Burner", "homemadeheater": "Homemade Heater",
-    "lumberfromdownunder": "Lumber From Down Under", "ironwood": "Ironwood",
-    "countrycrusher": "Country Crusher", "plaidpotshotter": "Plaid Potshotter",
-    "shotinthedark": "Shot in the Dark", "blastedbombardier": "Blasted Bombardier",
-    "reclaimedreanimator": "Reclaimed Reanimator", "antiqueannihilator": "Antique Annihilator",
-    "oldcountry": "Old Country", "americanpastoral": "American Pastoral",
-    "backcountryblaster": "Backcountry Blaster",
-    # Teufort collection
-    "bovineblazemaker": "Bovine Blazemaker", "warroom": "War Room",
-    "treadplatetormenter": "Treadplate Tormenter", "bogtrotter": "Bog Trotter",
-    "earthskyandfire": "Earth, Sky and Fire", "hickoryholepuncher": "Hickory Hole-Puncher",
-    "sprucedeuce": "Spruce Deuce", "teamsprayer": "Team Sprayer",
-    "rooftopwrangler": "Rooftop Wrangler", "civilservant": "Civil Servant",
-    "citizenpain": "Citizen Pain", "localhero": "Local Hero",
-    "mayor": "Mayor", "smalltownbringdown": "Smalltown Bringdown",
-    "civicduty": "Civic Duty",
-    # Powerhouse collection
-    "liquidasset": "Liquid Asset", "blackdahlia": "Black Dahlia",
-    "lightningrod": "Lightning Rod", "pinkelephant": "Pink Elephant",
-    "flashfryer": "Flash Fryer", "sparkoflife": "Spark of Life",
-    "deadreckoner": "Dead Reckoner", "shellshocker": "Shell Shocker",
-    "currentevent": "Current Event", "turbinetorcher": "Turbine Torcher",
-    "brickhouse": "Brick House", "sandstonespecial": "Sandstone Special",
-    "aquamarine": "Aquamarine", "lowprofile": "Low Profile",
-    "thunderbolt": "Thunderbolt",
-    # Harvest collection
-    "macabreweb": "Macabre Web", "nutcracker": "Nutcracker",
-    "boneyard": "Boneyard", "wildwood": "Wildwood",
-    "pumpkinpatch": "Pumpkin Patch", "autumn": "Autumn",
-    # Pyroland collection
-    "balloonicorn": "Balloonicorn", "rainbow": "Rainbow",
-    "sweetdreams": "Sweet Dreams", "bluemew": "Blue Mew",
-    "braincandy": "Brain Candy", "stabbedtohell": "Stabbed to Hell",
-    "flowerpower": "Flower Power", "mistercuddles": "Mister Cuddles",
-    "shottohell": "Shot to Hell", "torquedtohell": "Torqued to Hell",
-    # Gentlemanne collection
-    "coffinnail": "Coffin Nail", "topshelf": "Top Shelf",
-    "dressedtokill": "Dressed to Kill", "highrollers": "High Rollers",
-    # Warbird collection
-    "warhawk": "Warhawk", "blitzkrieg": "Blitzkrieg",
-    "airwolf": "Airwolf", "corsair": "Corsair",
-    "butcherbird": "Butcherbird", "killerbee": "Killer Bee",
-    "redbear": "Red Bear",
-}
-
-
-def load_decorated_weapons_catalog():
-    """
-    Load the decorated weapons catalog JSON.
-    Returns: dict {weapon_name: [variants...]} or None if file doesn't exist.
-    """
-    catalog_path = os.path.join(_SCRIPT_DIR, "decorated_weapons_catalog.json")
-    if not os.path.isfile(catalog_path):
-        return None
-    try:
-        with open(catalog_path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception:
-        return None
-
-
-# Default location where Baldurs Tod's per-collection SFM workshop mods
-# deposit decorated weapon VTF files. Auto-detected at runtime if present.
-_SFM_DECORATED_TEXTURES = os.path.join(
-    "C:\\", "Program Files (x86)", "Steam", "steamapps", "common",
-    "SourceFilmmaker", "game", "workshop", "materials", "models",
-    "weapons", "decorated_textures"
-)
-
-
-def _remove_vdf_block(text, block_name):
-    r"""
-    Remove a named KeyValues block, correctly handling arbitrarily nested
-    sub-blocks inside it. A naive regex (e.g. a single r'"WeaponSkin"\s*\{[^}]*\}')
-    stops at the FIRST closing brace and leaves a malformed, unbalanced
-    result the moment the block has any nested sub-block at all — confirmed
-    with a direct test: a WeaponSkin proxy containing one nested sub-block
-    (a shape real TF2 proxy blocks commonly have — the project's own VMT
-    safety-scanner work found this exact pattern in real material content)
-    produced mismatched braces and orphaned trailing content under the old
-    regex. This tracks brace depth explicitly instead of guessing.
-    """
-    pattern = re.compile(r'"' + re.escape(block_name) + r'"\s*\{', re.IGNORECASE)
-    m = pattern.search(text)
-    if not m:
-        return text
-    start = m.start()
-    depth = 0
-    i = m.end() - 1  # position of the opening brace
-    while i < len(text):
-        if text[i] == '{':
-            depth += 1
-        elif text[i] == '}':
-            depth -= 1
-            if depth == 0:
-                return text[:start] + text[i + 1:]
-        i += 1
-    return text  # unbalanced input — leave unchanged rather than guess
-
-
-def _generate_decorated_vmt(weapon_key, vtf_archive_path, base_pak):
-    """
-    Generate a VMT for a decorated weapon skin.
-
-    Takes the base weapon VMT from the game archive and replaces:
-    - $basetexture pointing to the skin's VTF (not the stock weapon texture)
-    - Removes the WeaponSkin proxy (which is what dynamically applied the
-      runtime-composited skin — not needed when we have a real texture),
-      via _remove_vdf_block() above rather than a single-level regex, since
-      the latter breaks if WeaponSkin has any nested sub-block (confirmed
-      against a real extracted paintkit VMT, not just a synthetic test).
-    - Keeps all other parameters: phong, rimlight, cloak/sheen proxies
-
-    Always generates a weapon-type-wide VMT at the standard weapon path
-    (materials/models/weapons/c_models/c_{weapon}/c_{weapon}.vmt),
-    replacing the appearance of every variant of that weapon.
-
-    There used to be a "per-variant" mode here too, targeting one specific
-    defindex via a VMT placed at materials/models/paintkits/{internal_name}/.
-    Removed — confirmed, by direct enumeration of a real tf2_misc_dir.vpk
-    (and independently re-confirmed via a full live-filesystem search
-    across every VPK for known collection-skin names), that this path
-    isn't a real interception point for collection skins at all. The real
-    materials/models/paintkits/ folder holds a small set of distinct,
-    individually-named one-off promotional skins (Macaw Masked, the
-    Dragon's Fury gold variants, a single Focke Wulf Minigun, etc.) — not
-    a per-collection-skin lookup table. Collection skins (Brick House, War
-    Room, and the rest) have no corresponding file anywhere to intercept;
-    they're purely runtime-composited from four GPU input layers. There
-    was nothing wrong with the per-variant implementation that could be
-    fixed — the mechanism it targeted doesn't exist.
-
-    The result is a standard VertexLitGeneric VMT that makes the weapon
-    render the provided decorated skin texture directly, exactly as
-    Gamebanana skin mods work for decorated weapons.
-    """
-    base_vmt_path = f"materials/models/weapons/c_models/c_{weapon_key}/c_{weapon_key}.vmt"
-    try:
-        raw = core.read_vpk_entry(base_pak, base_vmt_path).decode("utf-8", errors="replace")
-    except Exception:
-        # Fallback minimal VMT if base can't be read
-        raw = '"VertexLitGeneric"\n{\n}'
-
-    # Replace $basetexture with the skin VTF path (strip materials/ prefix
-    # and .vtf extension — VMT $basetexture doesn't include those)
-    tex_ref = vtf_archive_path
-    if tex_ref.startswith("materials/"):
-        tex_ref = tex_ref[len("materials/"):]
-    if tex_ref.endswith(".vtf"):
-        tex_ref = tex_ref[:-4]
-
-    # Replace $basetexture value — fine as a simple regex, no nesting concern
-    # here since this is a single key-value line, not a block.
-    raw = re.sub(
-        r'("\$basetexture"\s*)"[^"]+"',
-        f'"$basetexture" "{tex_ref}"',
-        raw
-    )
-    # Remove the WeaponSkin proxy block, correctly handling nested sub-blocks.
-    raw = _remove_vdf_block(raw, "WeaponSkin")
-
-    return raw.encode("utf-8")
-
-
-def _find_decorated_vtfs(weapon_key):
-    """
-    Search the SFM decorated_textures folder for all VTF files matching
-    the given weapon key, across all collections.
-    Returns list of (display_name, abs_path) tuples sorted by display name.
-    """
-    results = []
-    if not os.path.isdir(_SFM_DECORATED_TEXTURES):
-        return results
-
-    for collection in sorted(os.listdir(_SFM_DECORATED_TEXTURES)):
-        collection_dir = os.path.join(_SFM_DECORATED_TEXTURES, collection)
-        if not os.path.isdir(collection_dir):
-            continue
-        for fname in sorted(os.listdir(collection_dir)):
-            if not fname.lower().endswith(".vtf"):
-                continue
-            # File naming: {collection}_{weapon}_{skinname}.vtf
-            # Match files where the weapon segment matches weapon_key
-            # e.g. powerhouse_minigun_brickhouse.vtf -> weapon=minigun
-            parts = fname[:-4].split("_")  # strip .vtf
-            # Find weapon_key in the split parts sequence
-            weapon_parts = weapon_key.split("_")  # e.g. ["stickybomb", "launcher"]
-            # Try to find the weapon key as a contiguous run in parts
-            for i in range(len(parts) - len(weapon_parts)):
-                if parts[i:i+len(weapon_parts)] == weapon_parts:
-                    # Skin name is everything after the weapon segment
-                    skin_slug = "_".join(parts[i+len(weapon_parts):])
-                    # Look up friendly name, fall back to title-cased slug
-                    skin_name = SKIN_SLUG_NAMES.get(skin_slug, skin_slug.replace("_", " ").title())
-                    display = f"{skin_name} ({collection.title()})"
-                    results.append((display, os.path.join(collection_dir, fname)))
-                    break
-
-    results.sort(key=lambda x: x[0])
-    return results
-
-
-def interactive_decorated_weapon_swap(pak, index, preloader_dir, tf2_path):
-    """
-    Guided four-step decorated weapon skin swap flow.
-
-    Background: TF2 collection decorated weapon skins (Brick House, War Room,
-    etc.) exist as pre-composited VTF texture files captured from GPU memory
-    and distributed as SFM workshop mods by Baldurs Tod (one mod per collection).
-    Each VTF is a complete, ready-to-use texture for one specific skin on one
-    weapon: powerhouse_minigun_brickhouse.vtf, teufort_minigun_warroom.vtf, etc.
-
-    How the swap works: the base weapon VMT is pulled from TF2's own VPK,
-    its $basetexture is redirected to the skin VTF, and the WeaponSkin runtime
-    proxy is removed (it is no longer needed once we have a real texture). The
-    modified VMT and the VTF are bundled into the output VPK together. This is
-    the same technique used by Gamebanana decorated weapon skin mods.
-
-    The tool auto-detects VTFs from the SFM workshop folder if Baldurs Tod's
-    per-collection mods are installed. The user may also provide a VTF from
-    any other source (gabrielwoj's archive.org extraction, custom textures, etc.).
-
-    Step 1 — Character class filter (groups weapons by primary class)
-    Step 2 — Weapon selection within that class
-    Step 3 — Pick a skin VTF (from SFM library or manual path)
-    Step 4 — Confirmation and output
-    """
-    print("\n--- New decorated weapon swap ---\n")
-    print("Applies a collection skin (Brick House, War Room, etc.) to a weapon.")
-    print("Requires skin VTFs from Baldurs Tod's SFM workshop mods or similar source.\n")
-
-    # Group catalog weapons by class for the picker
-    catalog = load_decorated_weapons_catalog()
-    if not catalog:
-        print("Error: decorated_weapons_catalog.json not found.")
-        return
-
-    weapons_by_class = {}
-    for weapon in catalog.keys():
-        if weapon == "unknown":
-            continue
-        for weapon_class in WEAPON_CLASS_MAP.get(weapon, ["multi-class"]):
-            weapons_by_class.setdefault(weapon_class, []).append(weapon)
-
-    # Step 1: Pick class
-    print("Step 1 - Which class?")
-    class_order = ["scout", "soldier", "pyro", "demoman", "heavy", "engineer",
-                   "medic", "sniper", "spy", "multi-class"]
-    available_classes = [c for c in class_order if c in weapons_by_class]
-    chosen_class = choose("Select class", available_classes,
-                          [c.title() for c in available_classes])
-
-    # Step 2: Pick weapon
-    print(f"\nStep 2 - Which {chosen_class} weapon?")
-    class_weapons = sorted(weapons_by_class[chosen_class])
-    target_weapon = choose("Select weapon", class_weapons,
-                           [w.replace("_", " ").title() for w in class_weapons])
-    target_label = target_weapon.replace("_", " ").title()
-
-    # Step 3: pick the replacement skin's VTF source. Targeting is always
-    # weapon-wide (replaces the standard weapon material, affecting every
-    # variant of that weapon type) — see the module-level note above
-    # _generate_decorated_vmt() for why per-variant targeting was removed:
-    # confirmed, by direct VPK enumeration on a real install, that
-    # materials/models/paintkits/{internal_name}/ isn't a real interception
-    # path for collection skins at all. There's nothing there to intercept.
-    print(f"\nStep 3 - Select replacement skin for {target_label}")
-    sfm_vtfs = _find_decorated_vtfs(target_weapon)
-    sfm_available = bool(sfm_vtfs)
-    
-    # Check if catalog has skins for this weapon (for built-in catalog option)
-    catalog_variants = catalog.get(target_weapon, [])
-    catalog_available = bool(catalog_variants)
-
-    source_options = []
-    source_labels = []
-    
-    if sfm_available:
-        source_options.append("sfm")
-        source_labels.append(f"Pick from SFM library ({len(sfm_vtfs)} available)")
-    
-    if catalog_available:
-        source_options.append("catalog")
-        source_labels.append(f"Pick from built-in catalog ({len(catalog_variants)} skins)")
-    
-    source_options.append("manual")
-    source_labels.append("Provide a VTF file path manually")
-    
-    if not sfm_available and not catalog_available:
-        print("  No SFM library or catalog skins detected.")
-    
-    how = choose("Source", source_options, source_labels)
-
-    if how == "sfm":
-        display_names = [d for d, _ in sfm_vtfs]
-        skin_ids = [f"skin_{i}" for i in range(len(sfm_vtfs))]
-        chosen_id = choose("Select skin", skin_ids, display_names)
-        chosen_idx = int(chosen_id.split("_")[1])
-        source_name, vtf_abs_path = sfm_vtfs[chosen_idx]
-    elif how == "catalog":
-        # Built-in catalog mode: user picks a catalog skin as the replacement source
-        print("\n" + "=" * 70)
-        print("CATALOG MODE - VTF SOURCING REQUIRED")
-        print("=" * 70)
-        print("TF2's decorated weapons use runtime texture compositing (WeaponSkin proxy).")
-        print("Complete standalone textures don't exist in TF2's VPKs.")
-        print()
-        print("You can get pre-extracted VTF files from:")
-        print("  1. gabrielwoj's archive (GPU frame capture, highest quality)")
-        print("     https://archive.org/details/tf2-decorated-weapons-textures")
-        print("  2. Baldurs Tod's SFM Workshop mods (per-collection)")
-        print("     https://steamcommunity.com/sharedfiles/filedetails/?id=614624660")
-        print("  3. Extract yourself using Intel GPA / RenderDoc (advanced)")
-        print()
-        print("Once you have the VTF, provide its path below.")
-        print("=" * 70)
-        print()
-        
-        variant_ids = [f"cat_{i}" for i in range(len(catalog_variants))]
-        variant_labels = [
-            f"{v['name']} (defindex {v['defindex']})" for v in catalog_variants
-        ]
-        chosen_cat_id = choose("Select catalog skin", variant_ids, variant_labels)
-        chosen_cat_idx = int(chosen_cat_id.split("_")[1])
-        chosen_catalog_variant = catalog_variants[chosen_cat_idx]
-        
-        # Prompt for manual VTF
-        print(f"\nSelected: {chosen_catalog_variant['name']}")
-        print(f"Internal name: {chosen_catalog_variant.get('internal_name', 'N/A')}")
-        print()
-        while True:
-            raw = input("Path to the VTF file (q to quit): ").strip().strip("'\"")
-            if raw.lower() == "q":
-                sys.exit("Cancelled.")
-            expanded = os.path.expanduser(raw)
-            if os.path.isfile(expanded) and expanded.lower().endswith(".vtf"):
-                vtf_abs_path = expanded
-                source_name = chosen_catalog_variant['name']
-                break
-            print("  Not a valid .vtf file path, try again.")
-    else:
-        # Manual VTF path
-        while True:
-            raw = input("Path to the skin VTF file (q to quit): ").strip().strip("'\"")
-            if raw.lower() == "q":
-                sys.exit("Cancelled.")
-            expanded = os.path.expanduser(raw)
-            if os.path.isfile(expanded) and expanded.lower().endswith(".vtf"):
-                vtf_abs_path = expanded
-                source_name = os.path.splitext(os.path.basename(expanded))[0]
-                break
-            print("  Not a valid .vtf file path, try again.")
-
-    # Determine VTF archive path inside the VPK.
-    # By convention matches the SFM mod layout:
-    # materials/models/weapons/decorated_textures/{collection}/{filename}.vtf
-    vtf_fname = os.path.basename(vtf_abs_path)
-    collection_dir = os.path.basename(os.path.dirname(vtf_abs_path))
-    vtf_archive = f"materials/models/weapons/decorated_textures/{collection_dir}/{vtf_fname}"
-
-    # Generate VMT from base weapon VMT (redirects $basetexture, removes WeaponSkin proxy)
-    print("\nGenerating skin VMT...")
-    misc_pak_path = os.path.join(tf2_path, "tf2_misc_dir.vpk")
-    if not os.path.isfile(misc_pak_path):
-        print("Error: tf2_misc_dir.vpk not found.")
-        return
-    vpk_lib = core.get_vpk()
-    misc_pak = vpk_lib.open(misc_pak_path)
-    
-    # VMT path is always the standard weapon-wide path — see the note above
-    # Step 3 for why per-variant paintkit-folder targeting was removed.
-    vmt_archive = f"materials/models/weapons/c_models/c_{target_weapon}/c_{target_weapon}.vmt"
-    vmt_bytes = _generate_decorated_vmt(target_weapon, vtf_archive, misc_pak)
-
-    # Read VTF bytes
-    with open(vtf_abs_path, "rb") as f:
-        vtf_bytes = f.read()
-
-    mats = {
-        vmt_archive: vmt_bytes,
-        vtf_archive: vtf_bytes,
-    }
-
-    # Validate through standard safety check
-    verdict = material.validate_material_set(mats, target_class="weapon")
-    if not _report_verdict(verdict):
-        return
-
-    # Final step: Confirm
-    print(f"\nStep 4 - Confirm & output")
-    preview = material.preview_material_swap(verdict.safe_files)
-    print(f"  Replace : {target_label} (all variants)")
-    print(f"  With    : {source_name}")
-    print(f"  Scope   : Weapon-wide (all {target_weapon}s affected)")
-    print(f"  Note    : Credit gabrielwoj / Baldurs Tod in any shared mod")
-    print(f"  Preview : {preview['vmt_count']} material(s), "
-          f"{preview['vtf_count']} texture(s), {fmt_size(preview['total_size'])}")
-
-    if input("\nProceed? (y/n): ").strip().lower() not in ("y", "yes"):
-        sys.exit("Cancelled.")
-
-    fname = sanitize_filename(f"{target_label} skin ({source_name}){SIGNATURE}.vpk")
-    where = choose("Save to",
-                   ["default", "custom"],
-                   [f"Output folder as a VPK  ({OUTPUT_DIR})", "Custom path"])
-    out_path = os.path.join(OUTPUT_DIR, fname)
-    if where == "custom":
-        raw_path = input("Enter a path (file or folder): ").strip().strip("'\"")
-        if raw_path and not has_invalid_path_chars(raw_path):
-            cand = resolve_out_path(raw_path, fname)
-            valid, reason = validate_output_path(cand)
-            out_path = cand if valid else os.path.join(OUTPUT_DIR, fname)
-            if not valid:
-                print(f"  That path isn't writable ({reason}); using the output folder.")
-        elif raw_path:
-            print("  Invalid characters in path; using the output folder.")
-
-    result = material.build_material_only(verdict.safe_files, out_path)
-    print(f"\nSaved VPK: {result['out_path']}")
-    print("Drag it onto the Casual Preloader, tick it, hit Install.")
-    log.info(f"Built decorated weapon swap '{out_path}' ({source_name} on {target_label})")
-
-
 # ---------- interactive: skin (material) swap ----------
 # See tf2_material.py's module docstring for the full safety reasoning. In
 # short: this is the one swap type that could be turned into a cheat if it
@@ -2012,16 +1548,13 @@ def interactive_skin_swap(pak, index, preloader_dir, tf2_path):
     print("\n--- New skin / material swap ---\n")
     print("Applies a reskin (custom materials) to a weapon or cosmetic.")
     print("World, map and base-player materials are out of scope and refused.\n")
-    print("Heads-up for WEAPON reskins specifically: decorated/war-painted weapon")
+    print("Heads-up for WEAPON reskins specifically: war-painted weapon")
     print("skins are NOT a finished texture file anywhere in the game — TF2 composites")
     print("them at runtime on the GPU from four separate layers (bare metal, a colour")
     print("mask, a wear map, and ambient occlusion), reading the paint pattern from an")
     print("attached item attribute this tool has no access to. 'Copy another item's")
     print("textures' will pull that weapon's plain, unpainted stock material — not")
-    print("any war paint pattern — even if you pick a decorated weapon as the source.")
-    print("For an actual finished war paint texture, use the dedicated 'Decorated")
-    print("weapon swap' option instead (built specifically for this), or supply your")
-    print("own pre-rendered VTF here via the disk import option.\n")
+    print("any war paint pattern — even if you pick a war-painted weapon as the source.")
 
     kind = choose("What are you reskinning?",
                   ["weapon", "cosmetic"],
@@ -2333,7 +1866,7 @@ def show_inventory_diagnosis(tf2_path, pak, inventory_path):
     CLI troubleshooting helper for --debug-inventory: loads an inventory
     JSON file and reports, per owned item, exactly why it does or doesn't
     show up as a usable swap source/target. See core.diagnose_owned_items()
-    for what each status means and the likely cause for weapons (decorated
+    for what each status means and the likely cause for weapons (
     / War Paint items not carrying resolvable model data).
 
     Needs the defindex schema index — built/cached the same way as
@@ -2384,7 +1917,7 @@ def show_inventory_diagnosis(tf2_path, pak, inventory_path):
         lines.append(f"  {not_in_schema} item(s) not found in the schema at all, "
                       f"{no_model} found but with no model data listed.")
         lines.append("  If most of your weapons fall in one of those two buckets, that's "
-                      "consistent with decorated/War Paint weapons not carrying resolvable "
+                      "consistent with War Paint weapons not carrying resolvable "
                       "model data the same way stock-model weapons do (see the v4.75 "
                       "war paint roadmap note) — not a bug in the matching logic itself.")
 
@@ -2525,8 +2058,8 @@ def interactive(pak, index, defindex_index, preloader_dir, tf2_path):
         opts = ["swap", "weapon"]
         labels = ["Create a cosmetic swap", "Create a weapon swap"]
         if HAVE_MATERIAL:
-            opts += ["decorated", "skin", "prop"]
-            labels += ["Create a decorated weapon swap (skins)",
+            opts += ["skin", "prop"]
+            labels += [
                       "Create a skin / material swap",
                       "Create a map prop swap"]
         opts += ["mods", "installed", "loadinv", "changelog"]
@@ -2543,10 +2076,6 @@ def interactive(pak, index, defindex_index, preloader_dir, tf2_path):
         elif action == "weapon":
             print("\nSelected: Weapon swap")
             interactive_weapon_swap(pak, index, defindex_index, preloader_dir, owned_items_cache)
-            return
-        elif action == "decorated":
-            print("\nSelected: Decorated weapon swap")
-            interactive_decorated_weapon_swap(pak, index, preloader_dir, tf2_path)
             return
         elif action == "skin":
             print("\nSelected: Skin / material swap")

@@ -32,8 +32,8 @@ def check(name, cond):
 print("path classification")
 check("weapon viewmodel -> weapon",
       m.classify_material_path("materials/models/weapons/c_models/c_scattergun/c_scattergun.vmt") == "weapon")
-check("decorated weapon per-variant -> weapon",
-      m.classify_material_path("materials/models/paintkits/powerhouse_minigun_brickhouse/c_minigun.vmt") == "weapon")
+check("decorated weapon per-variant -> other (paintkits removed from allowed roots)",
+      m.classify_material_path("materials/models/paintkits/powerhouse_minigun_brickhouse/c_minigun.vmt") == "other")
 check("cosmetic item -> cosmetic",
       m.classify_material_path("materials/models/player/items/scout/hat.vmt") == "cosmetic")
 check("base player body -> player_base (BLOCK)",

@@ -300,9 +300,9 @@ class TestClassifyMaterialPath:
         assert material.classify_material_path(path) == "weapon"
     
     def test_classify_paintkit_material(self):
-        """Paintkit materials should be classified as 'weapon'."""
+        """Paintkit materials should be classified as "other" (paintkits no longer in allowed roots)."""
         path = "materials/models/paintkits/unusualeffects/smoke_green.vmt"
-        assert material.classify_material_path(path) == "weapon"
+        assert material.classify_material_path(path) == "other"
     
     def test_classify_cosmetic_item(self):
         """Cosmetic item materials should be classified as 'cosmetic'."""

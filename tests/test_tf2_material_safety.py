@@ -23,10 +23,6 @@ class TestPathClassification:
             "materials/models/weapons/c_models/c_scattergun/c_scattergun.vmt"
         ) == "weapon"
 
-    def test_decorated_weapon_classified_as_weapon(self):
-        assert m.classify_material_path(
-            "materials/models/paintkits/powerhouse_minigun_brickhouse/c_minigun.vmt"
-        ) == "weapon"
 
     def test_cosmetic_item_classified_as_cosmetic(self):
         assert m.classify_material_path(

@@ -471,16 +471,16 @@ def _is_custom_name_tag(name_hint):
     """
     Detect whether name_hint represents a player-applied custom Name Tag,
     rather than the item's normal display name (which can itself be a
-    decorated/Strange/Unusual variant name that legitimately differs from
-    the schema's generic base name without being a custom tag at all).
+    Strange/Unusual variant name that legitimately differs from the
+    schema's generic base name without being a custom tag at all).
 
     Steam/TF2 wraps a custom-named item's display name in a pair of single
     quotes (e.g. "''Mr. Fahrenheit''") — this is specific to Name Tags.
-    Valve's own item names, including every decorated weapon variant, are
+    Valve's own item names, including every non-tag weapon variant, are
     never wrapped this way. That makes the quote wrapper a reliable
     signal here; comparing name_hint against the schema name is NOT —
-    "Brick House Minigun" legitimately differs from "Minigun" without
-    being a tag, and would be a false positive under that approach.
+    a variant name legitimately differs from the schema's base name
+    without being a tag, and would be a false positive under that approach.
     """
     if not name_hint:
         return False
@@ -499,9 +499,9 @@ def display_name_with_actual(name_hint, schema_name):
     items might have custom names. Appending the real item name resolves
     that without losing the custom name itself.
 
-    Decorated weapon names (e.g. "Brick House Minigun") are correctly left
-    alone — see _is_custom_name_tag() for why detection is based on
-    Steam's quote-wrapping convention rather than a string comparison.
+    Non-tag variant names are correctly left alone — see
+    _is_custom_name_tag() for why detection is based on Steam's
+    quote-wrapping convention rather than a string comparison.
     """
     if name_hint and _is_custom_name_tag(name_hint):
         return f"{name_hint}  (Actual name: {schema_name})"
@@ -640,9 +640,9 @@ def match_owned_items(owned_items, defindex_index, pak, class_filter=None, slot_
                 continue
             seen_stems.add(stem_lower)
             # Steam's own inventory data carries a more specific name per
-            # owned asset than the schema does (e.g. "Brick House Minigun"
-            # for a decorated weapon, vs the schema's generic "Minigun") —
-            # that's used as-is, since it's still genuinely identifying.
+            # owned asset than the schema does (e.g. a war-painted variant
+            # vs the schema's generic base name) — that's used as-is,
+            # since it's still genuinely identifying.
             # A custom name TAG is different: Steam replaces the whole
             # display name with the player's chosen text (e.g.
             # "''Mr. Fahrenheit''" for an actual Degreaser), which is
@@ -669,7 +669,7 @@ def diagnose_owned_items(owned_items, defindex_index, pak):
     own-inventory mode. Not used by the normal swap flow — a troubleshooting
     aid for cases where an item the user knows they own isn't appearing.
 
-    The likely culprit for weapons: decorated / War Paint weapons don't
+    The likely culprit for weapons: War Paint weapons don't
     carry resolvable model data in items_game.txt the way a stock-model
     weapon does — the model stays the base weapon's .mdl, with the paint
     applied as a separate material layer. That gap is the reason war paint
