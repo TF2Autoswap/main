@@ -83,11 +83,14 @@ can replace only the interface layer without touching core or schema.
 
 ## Roadmap (current order — don't reorder without Sky's say)
 
-1. **v4.8** (shipped 2026-06-26) — decorated weapon swaps (System 1 collection skins, 8
-   collections, 14 weapon types). Swap uses pre-composited VTF textures from Baldurs Tod's
-   SFM Workshop mods; tool auto-generates the VMT (redirects $basetexture, removes WeaponSkin
-   proxy). Also: prop size checking, material transport for disk imports, organised import
-   folders.
+1. **v4.8** (dev branch, NOT shipped) — security hardening (schema/cache size
+   validation), prop size fairness warnings (hull bounding box checks, 2.5x
+   threshold), material transport for disk imports, organised import folders.
+   Decorated weapon swaps was attempted but **blocked**: decorated weapons target
+   specific base skins and render at launch via the game's HUD, making the VMT
+   proxy redirect approach non-viable. Non-functional decorated weapon code is
+   present and pending removal. Also held back due to concerns about prop swap
+   sightline misuse.
 2. **v4.85** — backend/API prep for mods.tf integration
 3. **v4.9** — cleanup + licence formalisation (PyPI, signed releases, pip packaging)
 4. **v4.95** — backend polish
@@ -99,9 +102,9 @@ the Casual Preloader's own VPK — either creating a dependency on the preloader
 (fragile) or shipping a competing precache VPK (scope creep). Revisit only if the preloader
 falls out of active development or a cleaner integration path emerges.
 
-**Scoped material/texture modification is a shipped v4.8 feature** via
-`tf2_material.py` and the `interactive_skin_swap()` / `--skin` CLI path.
-The safety layer is non-optional and enforces two hard boundaries:
+**Scoped material/texture modification is a developed v4.8 feature** (not
+shipped) via `tf2_material.py` and the `interactive_skin_swap()` / `--skin`
+CLI path. The safety layer is non-optional and enforces two hard boundaries:
 - **Allowed:** weapon viewmodel and cosmetic item materials, gated behind
   `validate_material_set()` which refuses wallhack render flags.
 - **Permanently blocked:** world/map/brush materials, base player body
