@@ -474,7 +474,7 @@ def validate_material_set(material_files, target_class=None):
         if path.lower().endswith(".vmt"):
             findings = scan_vmt_safety(data)
             for f in findings:
-                weapon_firstperson = (cls == "weapon" or target_class == "weapon")
+                weapon_firstperson = (cls == "weapon")
                 if f.severity == "critical":
                     verdict.blocked.append(f"{path}: {f.param} — {f.reason}")
                     was_blocked = True

@@ -28,9 +28,9 @@ enforces it. A control with no code anchor is a wish.
 
 ### C1. Material safety layer (hard-refuse)
 
-**Anchor:** `tf2_material.py::validate_material_set()` (line 400),
+**Anchor:** `tf2_material.py::validate_material_set()` (line 399),
 `tf2_material.py::scan_vmt_safety()`, `classify_material_path()`,
-`find_risky_proxy_targets()` (line 251), `has_proxies_block()` (line 276)
+`find_risky_proxy_targets()` (line 250), `has_proxies_block()` (line 275)
 
 All user-provided material files pass through a non-optional safety gate
 that enforces three hard boundaries:
