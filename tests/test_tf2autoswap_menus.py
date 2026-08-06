@@ -11,7 +11,7 @@ Uses unittest.mock.patch() to mock sys.stdin/sys.stdout and simulate user input.
 Tests cover valid selections, invalid input handling, pagination logic, and edge cases.
 
 Author: Melancholy Sky
-Co-author: Oz (Warp AI Agent)
+Co-author: AI assistance via OpenRouter
 """
 
 import pytest

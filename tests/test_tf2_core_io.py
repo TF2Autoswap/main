@@ -5,8 +5,7 @@ test_tf2_core_io.py - I/O operations testing (VPK file discovery, mod management
 Tests VPK file listing, preloader addon scanning, file removal, and archive path reading.
 Targeting 30+ tests covering error cases, edge conditions, and actual behavior.
 
-Author: Oz (Warp AI Agent)
-Co-author: Melancholy Sky
+Author: Melancholy Sky
 """
 
 import pytest

@@ -2,7 +2,7 @@
 """
 tf2_core.py - Core logic for the TF2 cosmetic and weapon swap tool.
 
-Developed with: Anthropic Claude API, Warp IDE, Oz Agent Platform
+Developed with: AI assistance via OpenRouter
 Project : https://github.com/TF2Autoswap/autoswap
 License : GPL v3 — see LICENSE for details
 

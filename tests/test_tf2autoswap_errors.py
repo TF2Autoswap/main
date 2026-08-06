@@ -5,7 +5,7 @@ test_tf2autoswap_errors.py - Comprehensive error handling tests for tf2autoswap.
 Tests error scenarios, user cancellation, missing files, invalid paths, and graceful degradation.
 
 Author: Melancholy Sky
-Co-author: Oz (Warp AI Agent)
+Co-author: AI assistance via OpenRouter
 """
 
 import pytest

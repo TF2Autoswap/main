@@ -7,7 +7,7 @@ and CLI argument parsing. Does not test interactive user input (that requires
 terminal mocking).
 
 Author: Melancholy Sky
-Co-author: Oz (Warp AI Agent)
+Co-author: AI assistance via OpenRouter
 """
 
 import pytest

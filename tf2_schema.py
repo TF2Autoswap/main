@@ -2,7 +2,7 @@
 """
 tf2_schema.py — TF2 item definitions and friendly name lookup.
 
-Developed with: Anthropic Claude API, Warp IDE, Oz Agent Platform
+Developed with: AI assistance via OpenRouter
 Project : https://github.com/TF2Autoswap/autoswap
 License : GPL v3 — see LICENSE for details
 

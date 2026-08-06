@@ -2,7 +2,7 @@
 """
 tf2_material.py - Material / skin swap engine and safety layer (v4.8).
 
-Developed with: Anthropic Claude API, Warp IDE, Oz Agent Platform
+Developed with: AI assistance via OpenRouter
 Project : https://github.com/TF2Autoswap/autoswap
 License : GPL v3 (see LICENSE / repository root)
 

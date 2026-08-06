@@ -1,8 +1,8 @@
 # TF2autoswap — Project Context
 
-This file exists so a new AI session (Warp Agent, a fresh Claude chat, etc.)
-has the background that isn't written anywhere else in the repo. The
-README and CHANGELOG cover *what* the tool does. This covers the *why*
+This file exists so a new AI session (Warp Agent, or any AI assistant in
+your current coding environment) has the background that isn't written
+anywhere else in the repo. The README and CHANGELOG cover *what* the tool does. This covers the *why*
 behind decisions that aren't obvious from the code alone.
 
 If you're an AI assistant reading this to help with the project: the
@@ -88,9 +88,13 @@ can replace only the interface layer without touching core or schema.
    threshold), material transport for disk imports, organised import folders.
    Decorated weapon swaps was attempted but **blocked**: decorated weapons target
    specific base skins and render at launch via the game's HUD, making the VMT
-   proxy redirect approach non-viable. Non-functional decorated weapon code is
-   present and pending removal. Also held back due to concerns about prop swap
-   sightline misuse.
+   proxy redirect approach non-viable. The ~500 lines of non-functional decorated
+   weapon code were removed during the pre-release cleanup pass (commit bb4bcb1).
+   Skin/material swaps via `interactive_skin_swap()` / `--skin` (custom user-provided
+   reskin folders, routed through the tf2_material.py safety layer) are a separate
+   working feature and remain in the release. The prop swap feature was also held
+   back due to concerns about sightline misuse but now includes `prop_size_warning()`
+   as a fairness safeguard.
 2. **v4.85** — backend/API prep for mods.tf integration
 3. **v4.9** — cleanup + licence formalisation (PyPI, signed releases, pip packaging)
 4. **v4.95** — backend polish
@@ -102,15 +106,16 @@ the Casual Preloader's own VPK — either creating a dependency on the preloader
 (fragile) or shipping a competing precache VPK (scope creep). Revisit only if the preloader
 falls out of active development or a cleaner integration path emerges.
 
-**Scoped material/texture modification is a developed v4.8 feature** (not
-shipped) via `tf2_material.py` and the `interactive_skin_swap()` / `--skin`
-CLI path. The safety layer is non-optional and enforces two hard boundaries:
+**Skin/material swaps** are a working v4.8 feature via `tf2_material.py` and the
+`interactive_skin_swap()` / `--skin` CLI path (custom user-provided reskin
+folders, not official decorated weapon skins — those are blocked by engine,
+see the Roadmap section above). The safety layer is non-optional and enforces
+two hard boundaries:
 - **Allowed:** weapon viewmodel and cosmetic item materials, gated behind
   `validate_material_set()` which refuses wallhack render flags.
 - **Permanently blocked:** world/map/brush materials, base player body
   materials, and any VMT content that enables depth-test bypass or ESP
-  (enforced in code, not by documentation). The decorated weapon swap
-  feature is also materials-only and routes through the same layer.
+  (enforced in code, not by documentation).
 
 Do not propose removing or bypassing the safety layer. Extending the
 allowed scope (e.g. to world materials or base player textures) is

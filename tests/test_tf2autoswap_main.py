@@ -6,7 +6,7 @@ Tests main() entry point, command-line argument handling, interactive modes,
 setup flows, and error handling using terminal mocking.
 
 Author: Melancholy Sky
-Co-author: Oz (Warp AI Agent)
+Co-author: AI assistance via OpenRouter
 """
 
 import pytest

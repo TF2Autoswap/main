@@ -6,7 +6,7 @@ Tests inventory loading, build operations, and disk import functions.
 Targets uncovered line ranges to push tf2_core.py from 37% to 60%+ coverage.
 
 Author: Melancholy Sky
-Co-author: Oz (Warp AI Agent)
+Co-author: AI assistance via OpenRouter
 """
 
 import pytest

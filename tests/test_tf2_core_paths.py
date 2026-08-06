@@ -7,8 +7,7 @@ Tests the following functions from tf2_core:
 - Path normalization and validation
 - Class filtering and keyword matching
 
-Author  : Oz (AI assistance)
-Co-Author : Melancholy Sky
+Author: Melancholy Sky
 License : GPL v3
 """
 

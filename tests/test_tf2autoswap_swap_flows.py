@@ -6,7 +6,7 @@ Tests the core swap workflow functions with proper mocking.
 Focuses on testable unit components rather than full end-to-end flows.
 
 Author: Melancholy Sky
-Co-author: Oz (Warp AI Agent)
+Co-author: AI assistance via OpenRouter
 """
 
 import pytest

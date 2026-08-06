@@ -6,7 +6,7 @@ Tests disk imports (cosmetic/weapon), inventory imports, and output modes
 (VPK, custom paths, preloader integration) using terminal mocking and tempfiles.
 
 Author: Melancholy Sky
-Co-author: Oz (Warp AI Agent)
+Co-author: AI assistance via OpenRouter
 """
 
 import pytest

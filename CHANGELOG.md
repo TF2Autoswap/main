@@ -16,24 +16,24 @@ Versions follow the project's own numbering. Dates are when each cut was made.
   validate both file size enforcement mechanisms, including adversarial inputs, cache recovery,
   and boundary conditions.
 ### Added
-- **Decorated weapon swaps with per-variant targeting** — apply a Gun Mettle/Tough Break
-  collection skin (Brick House, War Room, etc.) to any supported weapon. Uses pre-composited
-  VTF textures from Baldurs Tod's SFM Workshop mods or manual sources. Supports two targeting modes:
-  - **Per-variant mode**: VMT placed at `materials/models/paintkits/{internal_name}/{weapon}.vmt`
-    intercepts the WeaponSkin proxy's lookup for a specific defindex only (e.g., War Room Minigun
-    → Brick House affects only defindex 15031, not all miniguns)
-  - **Weapon-wide mode**: VMT replaces standard weapon path, affecting all variants of that
-    weapon type (all miniguns look like Brick House)
-  - Three source options: SFM library auto-detection, built-in catalog (158 variants across 14
-    weapons), or manual VTF path
-  - The tool generates a custom VMT (redirecting $basetexture to the skin VTF and removing the
-    WeaponSkin proxy), bundles it with the VTF, and outputs a ready-to-install VPK
-  - Guided flow: select class → weapon → targeting mode → [per-variant: pick target variant] →
-    pick replacement skin from library/catalog/manual → build
-  - 8 collections (Concealed Killer, Craftsmann, Teufort, Powerhouse, Harvest, Pyroland,
-    Gentlemanne, Warbird) across 14 weapon types supported
-  - Credit attribution required for shared mods (gabrielwoj / Baldurs Tod)
-  - War paint skins (System 2, procedural) are out of scope
+- **Skin / material swaps** — apply a custom reskin (replacement .vmt/.vtf materials) to any
+  weapon or cosmetic. Two source modes:
+  - **Import a reskin folder from disk** — point the tool at a Gamebanana download or custom
+    material pack; all .vmt/.vtf files are collected, run through the non-optional safety layer
+    (`validate_material_set()` in `tf2_material.py`), and bundled into a VPK ready to use.
+  - **Copy another in-game item's textures** — select any weapon or cosmetic from TF2's archive
+    as the material source; the tool resolves its materials from `tf2_textures_dir.vpk` and
+    applies them to the target. Best-effort — some items have complex multi-material setups that
+    may require the disk import path instead.
+  - The safety layer is non-optional and refuses: world/map/brush materials, base player body
+    materials, and any VMT flags or runtime proxies that could enable wallhack or ESP effects.
+    There is no way to bypass this check.
+  - Available in both the interactive menu and via `--skin` on the command line.
+  - Decorated weapon skins (official Gun Mettle/Tough Break collection patterns) were
+    attempted during v4.8 development but are **not included** — they render at launch via the
+    game's HUD and composite on the GPU from per-defindex item attributes the tool has no access
+    to, making a VMT-based intercept non-viable. War paint skins (System 2) are out of scope
+    for the same fundamental reason.
 - **Prop size checking** — prop swaps now compare the hull bounding boxes (overall
   collision dimensions) of source and replacement models. If the size difference is
   substantial (2.5x or more on the longest axis), a warning appears at the confirm

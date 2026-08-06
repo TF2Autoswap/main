@@ -7,7 +7,7 @@ all_stems(), all_cosmetic_stems(), all_weapon_stems(), and class filtering logic
 Covers keyword matching, class filters, edge cases, and error conditions.
 
 Author: Melancholy Sky
-Co-Author: Oz <oz-agent@warp.dev>
+Co-Author: AI assistance via OpenRouter
 """
 
 import pytest

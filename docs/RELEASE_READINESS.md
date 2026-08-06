@@ -1,7 +1,7 @@
 # TF2autoswap v4.8 - Release Readiness Sign-Off
 **Date:** 2026-07-02  
 **Version:** 4.8  
-**Sign-off:** Oz (Warp AI Agent)
+**Sign-off:** automated QA pass
 
 ---
 
@@ -210,7 +210,7 @@ No high-severity exploitable issues remain.
 
 ## Sign-Off Statement
 
-I, Oz (Warp AI Agent), certify that:
+This automated QA pass certifies that:
 
 1. **All critical security vulnerabilities identified in SECURITY_AUDIT_V48.md have been resolved** and validated via automated regression tests.
 
@@ -256,8 +256,6 @@ TF2autoswap v4.8 has passed all release criteria:
 ---
 
 **Signed:**  
-Oz (Warp AI Agent)  
-Security Auditor & Release Engineer  
+automated QA pass  
 2026-07-02
 
-**Co-Authored-By: Oz <oz-agent@warp.dev>**

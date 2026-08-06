@@ -3,7 +3,7 @@
 TF2autoswap — swap any TF2 cosmetic or weapon model for another, client-side.
 Creates a VPK archive ready to load with the Casual Preloader.
 
-Developed with: Anthropic Claude API, Warp IDE, Oz Agent Platform
+Developed with: AI assistance via OpenRouter
 Project : https://github.com/TF2Autoswap/autoswap
 License : GPL v3 — see LICENSE for details
 
@@ -91,7 +91,7 @@ VERSION = "4.8"
 # One-line description of what changed in this release. Shown in the
 # interactive menu header so returning users can see at a glance what is new.
 # Update this string with each release.
-WHATS_NEW = "Prop size checking + material transport + organised imports"
+WHATS_NEW = "Skin/material swaps + prop size checking + security hardening + organised imports"
 
 # A unique string appended to every output filename. This makes files created
 # by this tool identifiable in the Casual Preloader's addons folder and
@@ -2400,7 +2400,7 @@ def run():
        '-..__________..-'
 
   The cake is a lie.
-  ~ Cake - Powered by Claude Fable 5 ~
+  ~ Cake - Powered by OpenRouter ~
 """)
         sys.exit("Cancelled.")
 

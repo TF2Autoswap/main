@@ -6,7 +6,7 @@ Exercises the v4.8 safety layer and MDL parser with adversarial inputs.
 Converted from assertion-style to pytest format for coverage measurement.
 
 Author: Melancholy Sky
-Co-author: Oz (Warp AI Agent)
+Co-author: AI assistance via OpenRouter
 """
 
 import struct

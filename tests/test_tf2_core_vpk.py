@@ -13,7 +13,7 @@ Covers:
 - Integration with real vpk library behavior
 
 Author: Melancholy Sky
-Co-author: Oz (Warp AI Agent)
+Co-author: AI assistance via OpenRouter
 """
 
 import pytest

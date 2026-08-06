@@ -15,26 +15,23 @@ Thanks for testing! Work through the steps below and report anything unexpected 
 
 ## Basic
 
-- [ ] Interactive menu loads with multiple swap options (cosmetic, weapon, **decorated weapon**, skin, prop, inventory, manage mods, list installed)
+- [ ] Interactive menu loads with multiple swap options (cosmetic, weapon, skin, prop, inventory, manage mods, list installed)
 - [ ] A cosmetic swap completes and produces a `.vpk` in the `output/` folder
 - [ ] A weapon swap completes and the output is larger than the cosmetic swap (world model included)
 
 ---
 
-## Decorated Weapon Swap
+## Skin / Material Swap
 
-**Requires:** Baldurs Tod's per-collection SFM Workshop mods installed, OR use the test VTFs in
-`imports/weapons/materials/decorated_test_skins/`.
-
-- [ ] Decorated weapon swap option appears in the main menu (between weapon swap and skin swap)
-- [ ] Step 1 prompts for class selection (Scout, Soldier, Pyro, etc.)
-- [ ] Step 2 lists correct weapons for that class (Heavy shows Minigun + Shotgun, Engineer shows Pistol + Shotgun + Wrench)
-- [ ] Step 3 auto-detects SFM library skins (or falls back to manual VTF path if not installed)
-- [ ] Library mode: skin names display correctly (e.g. "Brick House (Powerhouse)", not raw slugs)
-- [ ] Selecting a skin generates the VMT, reads the VTF, and bundles both
-- [ ] Output VPK contains 1 VMT + 1 VTF (∼2 MB typical)
-- [ ] Manual VTF path: point at `imports/weapons/materials/decorated_test_skins/powerhouse_minigun_brickhouse.vtf`
-- [ ] In-game: load the VPK via Casual Preloader and verify the minigun shows the Brick House skin
+- [ ] Skin / material swap option appears in the main menu
+- [ ] Step 1 prompts to choose weapon or cosmetic to reskin
+- [ ] Step 2 prompts for class selection (for weapon reskins) or cosmetic search
+- [ ] Disk import mode: select a folder containing a `materials/` directory — materials are
+  collected and run through the safety check
+- [ ] In-game copy mode: select a source item — its materials are resolved from
+  `tf2_textures_dir.vpk` (best-effort)
+- [ ] Materials with wallhack flags (e.g. `$ignorez`) are refused by the safety check
+- [ ] Output VPK is ready to load via Casual Preloader
 
 ---
 

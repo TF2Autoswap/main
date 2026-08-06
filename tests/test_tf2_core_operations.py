@@ -6,7 +6,7 @@ Tests VPK reading, build operations, search/filter functions, and file operation
 Designed for high statement coverage of tf2_core.py uncovered functions.
 
 Author: Melancholy Sky
-Co-author: Oz (Warp AI Agent)
+Co-author: AI assistance via OpenRouter
 """
 
 import pytest

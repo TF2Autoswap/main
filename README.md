@@ -21,9 +21,8 @@ TF2 AutoSwap is a fan-made project and is not affiliated with Valve or Team Fort
 ## What it does
 
 - Swap any cosmetic or weapon model for another
-- Apply collection weapon skins (Brick House, War Room, etc.) via decorated weapon swaps
+- Apply custom material reskins to weapons or cosmetics via a safety-filtered pipeline
 - Swap map props with size-mismatch warnings to keep play fair
-- Skin / material swaps for cosmetics and weapons via a safety-filtered pipeline
 - Load your Steam inventory to pick items as swap sources or targets
 - Outputs a file ready for use with the [Casual Preloader](https://cueki.github.io/casual-pre-loader/) by cukei
 - Guided step-by-step menu, or run from the command line
@@ -69,5 +68,5 @@ See the [Development Process](https://github.com/TF2Autoswap/main/wiki/Developme
 
 ## Credits
 
-- Tool by **Sky (TF2Autoswap)** with coding assistance from Claude (Anthropic)
+- Tool by **Sky (TF2Autoswap)** with AI assistance via OpenRouter
 - Casual Preloader by **cukei** — [gamebanana.com/tools/19049](https://gamebanana.com/tools/19049)

@@ -26,26 +26,26 @@ Full security audit available in `SECURITY_AUDIT_V48.md`.
 
 ## ✨ New Features
 
-### Decorated Weapon Swaps (Gun Mettle / Tough Break Skins)
-Apply collection skins (Brick House, War Room, Treadplate, etc.) to any supported weapon client-side:
+### Skin / Material Swaps
+Apply a custom reskin (replacement .vmt/.vtf materials) to any weapon or cosmetic client-side:
 
-**Two Targeting Modes:**
-- **Per-variant** mode: Replace only one specific painted variant (e.g., War Room Minigun → Brick House)
-- **Weapon-wide** mode: Replace all variants of that weapon type
+**Two Source Modes:**
+- **Import a reskin folder from disk** — point the tool at a Gamebanana download or custom
+  material pack; all .vmt/.vtf files are collected, run through the non-optional safety layer
+  (`validate_material_set()` in `tf2_material.py`), and bundled into a VPK.
+- **Copy another in-game item's textures** — select any weapon or cosmetic from TF2's archive
+  as the material source; the tool resolves its materials from `tf2_textures_dir.vpk` and
+  applies them to the target.
 
-**Three Source Options:**
-- SFM Workshop library auto-detection
-- Built-in catalog (158 variants across 14 weapons, 8 collections)
-- Manual VTF path input
+**Safety Layer:** The safety check is non-optional and refuses: world/map/brush materials,
+base player body materials, and any VMT flags or runtime proxies that could enable wallhack
+or ESP effects. There is no way to bypass this check.
 
-**Guided Flow:** class → weapon → mode → [variant selection] → skin → build
-
-**Supported Collections:**
-- Concealed Killer, Craftsmann, Teufort, Powerhouse
-- Harvest, Pyroland, Gentlemanne, Warbird
-
-Credit attribution required for shared mods (gabrielwoj / Baldurs Tod).  
-War paint skins (System 2, procedural) are out of scope.
+**Decorated weapon skins** (official Gun Mettle/Tough Break collection patterns) were
+attempted during v4.8 development but are not included — they render at launch via the
+game's HUD and composite on the GPU from per-defindex item attributes the tool has no access
+to, making a VMT-based intercept non-viable. War paint skins (System 2) are out of scope
+for the same reason.
 
 ---
 
@@ -93,19 +93,20 @@ Makes intended drop locations visible from the start.
 
 ## 📊 Test Coverage
 
-**82 tests total:**
-- 70 pytest unit/integration tests
-- 12 security regression tests
+**566 tests total, 100% pass rate.**
 
-**Coverage:**
-- tf2_schema.py: 70% (security-critical module)
-- Overall: 24%
-- 100% pass rate
-
-**New Test Files:**
-- `tests/test_security_schema.py` — Schema/cache size validation
+**Test Files:**
+- `tests/test_tf2_material_safety.py` — Material safety layer (47 tests)
+- `tests/test_tf2_material_extended.py` — Material engine (80+ tests)
+- `tests/test_security_schema.py` — Schema/cache size validation (12 tests)
 - `tests/test_tf2_core_paths.py` — Path handling
 - `tests/test_tf2_core_logic.py` — Schema logic
+- `tests/test_tf2_core_models.py` — MDL/model operations
+- `tests/test_tf2autoswap.py` — CLI and integration flows
+- `tests/test_tf2autoswap_errors.py` — Error handling
+- `tests/test_tf2autoswap_import_modes.py` — Import paths
+- `tests/test_tf2autoswap_menus.py` — Menu/interactive flows
+- `tests/test_tf2autoswap_swap_flows.py` — Swap workflows
 - `tests/test_integration_workflows.py` — End-to-end flows
 
 ---
@@ -153,9 +154,13 @@ Dependencies (`vpk`, `vdf`) auto-install on first run.
 
 ## ⚠️ Known Issues
 
-- War paint skins (System 2, procedural patterns) not supported — out of scope for v4.8
-- Decorated weapon catalog limited to Gun Mettle / Tough Break collections
-- Material-only swaps (pure retextures with no model change) not yet exposed in UI
+- War paint skins (System 2, procedural patterns) not supported — out of scope (rendered
+  by TF2's GPU compositor from per-item attributes, same fundamental limitation as
+  decorated weapon skins)
+- Decorated weapon skins (Gun Mettle/Tough Break collections) not supported — blocked by
+  engine; see CHANGELOG for details
+- Some items with complex multi-material setups may require the disk import path rather
+  than the in-game copy-textures option (best-effort)
 
 ---
 
@@ -180,9 +185,6 @@ GPL v3 — see LICENSE file
 ## 🙏 Credits
 
 - **Core Development:** Melancholy Sky
-- **Coding Assistance:** Claude (Anthropic)
-- **SFM Workshop Mods:** gabrielwoj / Baldurs Tod
-- **Security Audit:** Oz (Warp AI Agent)
 
 ---
 
@@ -196,4 +198,3 @@ GPL v3 — see LICENSE file
 
 ---
 
-**Co-Authored-By: Oz <oz-agent@warp.dev>**

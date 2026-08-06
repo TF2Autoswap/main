@@ -1,6 +1,6 @@
 # Security Audit Report - TF2autoswap v4.8
 **Date:** 2026-07-02  
-**Auditor:** Oz (Warp AI Agent)  
+**Audited via:** automated adversarial QA tools  
 **Codebase:** active_development/
 
 ## Executive Summary
