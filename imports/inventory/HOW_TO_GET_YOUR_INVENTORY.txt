@@ -1,0 +1,37 @@
+How to get your TF2 inventory file
+===================================
+
+This lets you pick swap sources/targets from items you actually own,
+instead of searching TF2's whole catalog. The tool never contacts Steam
+itself — you export the file yourself, and the tool only reads it locally.
+
+1. Make sure your Steam inventory privacy is set to Public.
+   (Steam > Settings > Privacy Settings > Inventory — this is separate
+   from your overall profile privacy setting.)
+
+2. Find your SteamID64 if you don't already know it:
+   https://steamid.io  (paste your profile URL there)
+
+3. While logged into Steam in your browser, visit this URL with your own
+   SteamID64 in place of <steamid64>:
+
+   https://steamcommunity.com/inventory/<steamid64>/440/2?l=english&count=5000
+
+4. Save the page as a .json file:
+   - Most browsers: Ctrl+S (Cmd+S on Mac). If asked, choose a "Page
+     Source" / raw save option rather than "Webpage, Complete".
+   - Alternative: select all the text on the page (Ctrl+A), copy it,
+     paste into a plain text editor, and save it with a .json extension.
+
+5. Drop the saved .json file in this folder (imports/inventory/).
+   Next time you choose "Load inventory from file" in the tool, it'll
+   offer this file automatically instead of asking for a path.
+
+What this file contains, for your own peace of mind:
+   Just your TF2 item list — names, qualities, and item IDs. It does NOT
+   contain your Steam password, login session, or anything that could be
+   used to access your account. It's safe to keep, delete, or share for
+   troubleshooting without any account-security risk.
+
+If you place more than one .json file here, the tool will ask you which
+one to use.

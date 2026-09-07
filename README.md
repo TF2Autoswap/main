@@ -10,9 +10,20 @@ TF2 AutoSwap is a fan-made project and is not affiliated with Valve or Team Fort
 
 ---
 
+## Important notice
+
+- **VAC risk** — client-side model swaps are a grey area. Use at your own risk and only while TF2 is closed.
+- **Competitive leagues** — most leagues prohibit visual modifications. Check the rules for any league you play in before using this tool.
+- This tool has no affiliation with Valve or the TF2 team.
+
+---
+
 ## What it does
 
 - Swap any cosmetic or weapon model for another
+- Apply custom material reskins to weapons or cosmetics via a safety-filtered pipeline
+- Swap map props with size-mismatch warnings to keep play fair
+- Load your Steam inventory to pick items as swap sources or targets
 - Outputs a file ready for use with the [Casual Preloader](https://cueki.github.io/casual-pre-loader/) by cukei
 - Guided step-by-step menu, or run from the command line
 - Warns you before any swap that may cause visual clipping or animation issues
@@ -22,6 +33,7 @@ TF2 AutoSwap is a fan-made project and is not affiliated with Valve or Team Fort
 ## Requirements
 
 - Python 3.8 or later
+- Windows, Linux, or macOS
 - Dependencies install automatically on first run
 
 ---
@@ -50,11 +62,11 @@ See the [Development Process](https://github.com/TF2Autoswap/main/wiki/Developme
 
 ## License
 
-**GNU GENERAL PUBLIC LICENSE** — Free to use and modify with credit.
+**GNU GENERAL PUBLIC LICENSE v3** — Free to use, modify, and distribute. See `LICENSE` for full terms.
 
 ---
 
 ## Credits
 
-- Tool by **Sky (TF2Autoswap)** with coding assistance from Claude (Anthropic)
+- Tool by **Sky (TF2Autoswap)** with AI assistance via OpenRouter
 - Casual Preloader by **cukei** — [gamebanana.com/tools/19049](https://gamebanana.com/tools/19049)
