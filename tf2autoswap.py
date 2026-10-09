@@ -2523,7 +2523,7 @@ def manage_mods_readonly(index):
             print(f"  {i}. {m['rel']}")
             print(f"       replaces: {tgt}")
             i += 1
-    print("\n(Run interactively — option 3 — to remove any of these.)")
+    print("\n(Run interactively — option 5 — to remove any of these.)")
 
 
 # ---------- acknowledgement system ----------
