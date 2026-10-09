@@ -52,6 +52,49 @@ class TestResolveTF2:
         assert "tf2 not found" in str(exc_info.value).lower()
 
 
+class TestSteamLibraryPaths:
+    """Test discovery of Steam's non-default library folders."""
+
+    def test_steam_library_paths_without_vdf(self):
+        """A missing 'vdf' degrades to no libraries rather than crashing."""
+        with patch.dict('sys.modules', {'vdf': None}):
+            assert core.steam_library_paths() == []
+
+    def test_steam_library_paths_reads_libraryfolders(self, tmp_path):
+        """Library paths are read from Steam's libraryfolders.vdf."""
+        steamapps = tmp_path / "steamapps"
+        steamapps.mkdir()
+        (steamapps / "libraryfolders.vdf").write_text(
+            '"libraryfolders"\n{\n\t"0"\n\t{\n\t\t"path"\t\t"/first/library"\n\t}\n'
+            '\t"1"\n\t{\n\t\t"path"\t\t"/second/library"\n\t}\n}\n'
+        )
+        with patch.object(core, 'STEAM_ROOTS', [str(tmp_path)]):
+            assert core.steam_library_paths() == ["/first/library", "/second/library"]
+
+    def test_resolve_tf2_finds_tf2_in_extra_library(self, tmp_path):
+        """TF2 in a non-default library is found, not only in TF2_PATHS."""
+        library = tmp_path / "SteamLibrary"
+        tf_dir = library / "steamapps" / "common" / "Team Fortress 2" / "tf"
+        tf_dir.mkdir(parents=True)
+        (tf_dir / "tf2_misc_dir.vpk").write_bytes(b"")
+
+        steam = tmp_path / "steam" / "steamapps"
+        steam.mkdir(parents=True)
+        (steam / "libraryfolders.vdf").write_text(
+            '"libraryfolders"\n{\n\t"0"\n\t{\n\t\t"path"\t\t"%s"\n\t}\n}\n' % library
+        )
+        with patch.object(core, 'STEAM_ROOTS', [str(tmp_path / "steam")]):
+            with patch.object(core, 'TF2_PATHS', []):
+                assert core.resolve_tf2() == str(tf_dir)
+
+    def test_resolve_tf2_raises_when_nothing_discovered(self):
+        """With no libraries and no default paths, TF2NotFound is raised."""
+        with patch.object(core, 'steam_library_paths', return_value=[]):
+            with patch.object(core, 'TF2_PATHS', []):
+                with pytest.raises(core.TF2NotFound):
+                    core.resolve_tf2()
+
+
 class TestPathNormalization:
     """Test path normalization and handling."""
     

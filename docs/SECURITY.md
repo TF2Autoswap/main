@@ -130,24 +130,25 @@ code and had to be rotated.
 
 ### C9. No shell injection (design invariant)
 
-**Anchor:** `tf2_core.py` — all subprocess calls use argument lists,
-not shell strings. `tf2autoswap.py` — all `os.path` functions for
-path construction.
+**Anchor:** `tf2_core.py`, `tf2_schema.py` — no subprocess calls remain in
+either module. Both previously shelled out to `pip install` for a missing
+`vpk`/`vdf`; that path was removed. `tf2autoswap.py` — all `os.path`
+functions for path construction.
 
-Verified: zero subprocess calls with string interpolation. The
-auto-install path for `vpk`/`vdf` uses `[sys.executable, "-m", "pip",
-"install", ...]` with hardcoded package names — no user-controlled
-strings in the command.
+Verified: zero subprocess calls with string interpolation. The removed
+auto-install call used `[sys.executable, "-m", "pip", "install", ...]` with
+hardcoded package names, so it was never injectable; it is gone rather than
+changed.
 
 ### C10. Lazy imports gated by availability (degrade-gracefully)
 
 **Anchor:** `tf2_core.py::get_vpk()`, `tf2autoswap.py` lines 63-83
 
-Optional dependencies (`vpk`, `vdf`, `Pillow`) are imported lazily.
-If unavailable, the tool degrades with clear messaging rather than
-crashing. The schema system gracefully handles missing `vdf` (no
-friendly names, no class filtering — but core swap operations still
-work).
+Optional dependencies (`vpk`, `vdf`, `Pillow`) are imported lazily. Missing
+`vpk` raises `ImportError` naming the install command, since VPK access is
+required for every swap. Missing `vdf` degrades gracefully: `load_index()`
+catches the schema load failure and returns `None`, so friendly names and
+class filtering are skipped while core swap operations still work.
 
 ## Enforcement modes
 

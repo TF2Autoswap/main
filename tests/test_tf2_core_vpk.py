@@ -6,7 +6,7 @@ Tests VPK library loading, reading, entry access, error handling, and archive op
 Focuses on tf2_core functions: get_vpk(), read_vpk_entry(), open_pak(), VPK reading/indexing.
 
 Covers:
-- VPK library auto-installation and caching
+- VPK library loading and caching (declared dependency, never installed at runtime)
 - File entry reading with KeyError (missing from index) vs FileNotFoundError (missing chunks)
 - VPK archive indexing and listing
 - Error handling for corrupt/incomplete archives

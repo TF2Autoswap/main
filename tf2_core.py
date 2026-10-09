@@ -28,8 +28,8 @@ maintain, and extend with new frontends.
 """
 
 # Standard library only at the top level. The third-party 'vpk' library is
-# imported lazily inside get_vpk() so it can be auto-installed on first run.
-import os, tempfile, shutil, subprocess, sys, json, struct
+# imported lazily inside get_vpk() so a clear error can name the fix.
+import os, tempfile, shutil, json, struct
 
 # Size validation imports (will be completed after SwapError is defined below)
 _size_limits_available = False
@@ -117,6 +117,15 @@ TF2_PATHS = [
     "~/Library/Application Support/Steam/steamapps/common/Team Fortress 2/tf",
 ]
 
+# Where Steam keeps its own configuration. Steam records every additional
+# library folder (a second drive, an external disk) in
+# steamapps/libraryfolders.vdf under one of these, so they are the entry point
+# for finding a TF2 install that is not in the default library.
+STEAM_ROOTS = [
+    "~/.steam/steam",
+    "~/.local/share/Steam",
+]
+
 # The nine playable character classes in TF2. Used to build class filter menus
 # in the interface, and to understand per-class model path naming conventions.
 CLASSES = ["scout", "soldier", "pyro", "demoman", "heavy",
@@ -192,7 +201,7 @@ EXTS = [".mdl", ".vvd", ".dx80.vtx", ".dx90.vtx", ".sw.vtx", ".phy"]
 
 def get_vpk():
     """
-    Return the 'vpk' Python library, installing it automatically if needed.
+    Return the 'vpk' Python library.
 
     VPK (Valve Package) is the archive format Valve uses to store game assets.
     A VPK file works like a ZIP file — it contains many files packed together
@@ -200,23 +209,26 @@ def get_vpk():
     configuration data all live inside VPK archives.
 
     The 'vpk' library (by ValvePython) provides Python-level read/write access
-    to these archives. We import it lazily here (not at the top of the file)
-    so the tool can automatically install it via pip on first run, without
-    requiring the user to set anything up manually.
+    to these archives. It is a declared dependency of the project, so it is
+    installed with the project rather than fetched at runtime.
 
-    The --no-warn-script-location flag suppresses a harmless but alarming
-    Windows message about pip-installed scripts not being on the system PATH.
+    Raises:
+        ImportError: If 'vpk' is missing. The tool no longer installs
+            packages for you, because that fails outright on externally
+            managed interpreters (PEP 668) where `python -m pip` does not
+            exist. Install into the project's virtualenv instead:
+
+                python3 -m venv venv && venv/bin/pip install -e .
     """
     try:
         import vpk
-        return vpk
-    except ImportError:
-        subprocess.run(
-            [sys.executable, "-m", "pip", "install", "vpk", "--no-warn-script-location"],
-            check=True
-        )
-        import vpk
-        return vpk
+    except ImportError as e:
+        raise ImportError(
+            "The 'vpk' library is required to read TF2's VPK archives.\n"
+            "Install the project dependencies into its virtualenv:\n"
+            "    python3 -m venv venv && venv/bin/pip install -e ."
+        ) from e
+    return vpk
 
 
 def read_vpk_entry(pak, path):
@@ -259,19 +271,68 @@ def read_vpk_entry(pak, path):
         ) from e
 
 
+def steam_library_paths():
+    """
+    Return the library folders Steam has configured, in the order Steam lists them.
+
+    Steam installs games into one or more library folders. Only the default one
+    lives in a predictable place; every extra library (a second drive, an
+    external disk) is recorded solely in steamapps/libraryfolders.vdf. Without
+    reading it, TF2 is invisible whenever it is not in the default library.
+
+    Returns an empty list when Steam is absent or the file cannot be read. This
+    is best-effort: callers fall back to the hardcoded TF2_PATHS, so a missing
+    or malformed file costs detection accuracy, not correctness. 'vdf' stays
+    optional here because library discovery is an enhancement, not a
+    requirement, and the tool still works without friendly item names.
+    """
+    try:
+        import vdf
+    except ImportError:
+        return []
+
+    found = []
+    for root in STEAM_ROOTS:
+        path = os.path.join(os.path.expanduser(root), "steamapps", "libraryfolders.vdf")
+        if not os.path.isfile(path):
+            continue
+        try:
+            with open(path, encoding="utf-8", errors="replace") as handle:
+                data = vdf.loads(handle.read())
+        except (OSError, ValueError, KeyError, SyntaxError):
+            continue
+        folders = data.get("libraryfolders") or data.get("LibraryFolders") or {}
+        for entry in folders.values():
+            # Current Steam stores {"path": "/x", ...}; legacy Steam stored "/x".
+            library = entry.get("path") if isinstance(entry, dict) else entry
+            if isinstance(library, str) and library and library not in found:
+                found.append(library)
+    return found
+
 def resolve_tf2(override=None):
     """
     Locate TF2's 'tf' directory and return its path, or raise TF2NotFound.
 
     If override is provided (from the --tf2 command-line flag), only that
-    path is checked. Otherwise, all common default installation paths are tried.
+    path is checked. Otherwise the libraries Steam reports are searched first,
+    then the common default installation paths.
+
+    Reading Steam's own library list matters because TF2 is frequently
+    installed outside the default library, on a second drive or an external
+    disk. Those locations appear nowhere except libraryfolders.vdf, so a
+    hardcoded list alone silently misses a working install.
 
     We verify the path by checking for 'tf2_misc_dir.vpk' — this is the main
     game asset archive that contains the model files we need. Its presence
     confirms we have found the correct TF2 directory rather than some other
     folder that happens to be at a similar path.
     """
-    paths = [override] if override else [os.path.expanduser(p) for p in TF2_PATHS]
+    if override:
+        paths = [override]
+    else:
+        paths = [os.path.join(lib, "steamapps", "common", "Team Fortress 2", "tf")
+                 for lib in steam_library_paths()]
+        paths += [os.path.expanduser(p) for p in TF2_PATHS]
     for path in paths:
         if path and os.path.isfile(os.path.join(path, "tf2_misc_dir.vpk")):
             return path

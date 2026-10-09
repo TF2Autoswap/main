@@ -183,7 +183,7 @@ class ItemInfo:
 
 def _need_vdf():
     """
-    Return the 'vdf' Python library, installing it automatically if needed.
+    Return the 'vdf' Python library.
 
     VDF (Valve Data Format), also called KeyValues, is a simple text format
     Valve uses for many game configuration files. It looks like this:
@@ -193,20 +193,26 @@ def _need_vdf():
         }
 
     The 'vdf' library (by ValvePython) parses VDF text into Python dicts.
-    It is imported lazily here so it can be auto-installed on first run,
-    consistent with how the 'vpk' library is handled in tf2_core.py.
+    It is a declared dependency of the project, so it is installed with the
+    project rather than fetched at runtime.
+
+    Raises:
+        ImportError: If 'vdf' is missing. The tool no longer installs
+            packages for you, because that fails outright on externally
+            managed interpreters (PEP 668) where `python -m pip` does not
+            exist. Install into the project's virtualenv instead:
+
+                python3 -m venv venv && venv/bin/pip install -e .
     """
     try:
         import vdf
-        return vdf
-    except ImportError:
-        import sys, subprocess
-        subprocess.run(
-            [sys.executable, "-m", "pip", "install", "vdf", "--no-warn-script-location"],
-            check=True
-        )
-        import vdf
-        return vdf
+    except ImportError as e:
+        raise ImportError(
+            "The 'vdf' library is required to parse items_game.txt.\n"
+            "Install the project dependencies into its virtualenv:\n"
+            "    python3 -m venv venv && venv/bin/pip install -e ."
+        ) from e
+    return vdf
 
 
 def load_schema(tf2_path):

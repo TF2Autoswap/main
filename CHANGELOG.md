@@ -3,6 +3,29 @@
 All notable changes to TF2autoswap are recorded here.
 Versions follow the project's own numbering. Dates are when each cut was made.
  
+## [Unreleased]
+### Fixed
+- **Removed runtime dependency installation** — `get_vpk()` and `_need_vdf()` no longer
+  shell out to `pip install` when a library is missing. On externally managed
+  interpreters (PEP 668, as on CachyOS) `python -m pip` does not exist, so the old
+  fallback could never succeed there and failed with a confusing error instead. A
+  missing dependency now raises `ImportError` naming the command that fixes it.
+  Dependencies are declared in `pyproject.toml` and installed with the project.
+- **TF2 in a non-default Steam library is now found** — `resolve_tf2()` read only
+  five hardcoded install paths, so a TF2 install living on a second drive or an
+  external disk was invisible even though Steam knew about it. It now reads
+  Steam's own `steamapps/libraryfolders.vdf` and searches every library Steam
+  reports, falling back to the hardcoded paths when Steam is absent or `vdf` is
+  unavailable. On this machine that is the difference between "TF2 not found"
+  and finding it in one of seven configured libraries.
+
+### Added
+- **`run.fish`** — a launcher that creates the virtualenv and installs the
+  dependencies on first use, then runs the tool with every argument passed
+  through. It execs the virtualenv interpreter directly rather than activating
+  the environment, because activation in fish means sourcing a script rather
+  than the `source venv/bin/activate` that most guides assume.
+
 ## [4.8] - 2026-07-02
 ### Security
 - **CRITICAL: Schema file size validation** — `load_schema()` now enforces a 200MB limit on

@@ -142,8 +142,8 @@ TOTAL            3709   2827    24%
 ---
 
 ### 7. Dependencies ✅ VERIFIED
-- [x] `vpk` library (auto-installs)
-- [x] `vdf` library (auto-installs)
+- [x] `vpk` library (declared dependency, no runtime install)
+- [x] `vdf` library (declared dependency, no runtime install)
 - [x] Python 3.14.6 (or 3.8+)
 - [x] pytest 9.1.1 (dev dependency)
 - [x] pytest-cov 7.1.0 (dev dependency)

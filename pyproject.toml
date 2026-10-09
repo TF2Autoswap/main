@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tf2autoswap"
+version = "4.8.0"
+description = "Client-side TF2 cosmetic, weapon and prop swap tool"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "vpk>=0.13",
+    "vdf",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+]
+
+[tool.setuptools]
+# Flat layout: the modules sit beside tf2autoswap.py rather than in a package
+# directory, so list them explicitly and disable package auto-discovery.
+py-modules = ["tf2autoswap", "tf2_core", "tf2_schema", "tf2_material"]
+packages = []

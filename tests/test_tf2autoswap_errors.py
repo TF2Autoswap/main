@@ -340,12 +340,11 @@ class TestAdvancedErrorPaths:
                 # Should handle exception gracefully
                 assert result is None or isinstance(result, dict)
 
-    def test_vpk_import_autoinstall_failure(self):
-        """VPK library auto-install failure propagates"""
-        # If pip install fails, get_vpk should raise
-        with patch('subprocess.run', side_effect=Exception("pip install failed")):
-            with pytest.raises(Exception):
-                with patch.dict('sys.modules', {'vpk': None}):
+    def test_vpk_missing_raises_import_error(self):
+        """A missing 'vpk' raises ImportError naming the fix, without shelling out."""
+        with patch('subprocess.run', side_effect=AssertionError("must not shell out to pip")):
+            with patch.dict('sys.modules', {'vpk': None}):
+                with pytest.raises(ImportError, match="vpk"):
                     core.get_vpk()
 
     def test_network_timeout_simulation(self):

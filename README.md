@@ -34,7 +34,8 @@ TF2 AutoSwap is a fan-made project and is not affiliated with Valve or Team Fort
 
 - Python 3.8 or later
 - Windows, Linux, or macOS
-- Dependencies install automatically on first run
+- The project installed into a virtualenv (see below). Dependencies are
+  declared in `pyproject.toml` and are no longer fetched at run time.
 
 ---
 
@@ -43,6 +44,15 @@ TF2 AutoSwap is a fan-made project and is not affiliated with Valve or Team Fort
 Download the latest release, extract the folder, then run:
 
 ```
+./run.fish
+```
+
+That creates the virtualenv and installs the dependencies on first use, then
+hands any arguments straight to `tf2autoswap.py`. On a shell without fish:
+
+```
+python3 -m venv venv
+venv/bin/pip install -e .
 python3 tf2autoswap.py
 ```
 

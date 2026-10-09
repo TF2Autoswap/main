@@ -12,6 +12,8 @@ coverage.json
 # Build artifacts
 *.vpk
 output/
+*.egg-info/
+venv/
 
 # Runtime state
 .tf2autoswap/

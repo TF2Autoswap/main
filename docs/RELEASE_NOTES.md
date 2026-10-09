@@ -139,10 +139,22 @@ The v4.8 material safety layer demonstrates exemplary security design:
 ```bash
 git clone https://github.com/TF2Autoswap/autoswap.git
 cd autoswap
+./run.fish
+```
+
+`run.fish` creates the virtualenv and installs the dependencies on first use,
+then hands any arguments straight through. Without fish, the equivalent is:
+
+```bash
+python3 -m venv venv
+venv/bin/pip install -e .
 python3 tf2autoswap.py
 ```
 
-Dependencies (`vpk`, `vdf`) auto-install on first run.
+Dependencies (`vpk`, `vdf`) are declared in `pyproject.toml` and installed with
+the project. They are no longer fetched at runtime: on externally managed
+interpreters (PEP 668) `python -m pip` does not exist, so the old auto-install
+silently failed there.
 
 ### Upgrade from 4.7
 1. Backup `output/` directory (your built mods)
