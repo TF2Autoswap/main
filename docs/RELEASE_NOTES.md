@@ -93,7 +93,7 @@ Makes intended drop locations visible from the start.
 
 ## 📊 Test Coverage
 
-**566 tests total, 100% pass rate.**
+**727 tests passing** (0 skipped), verified at release.
 
 **Test Files:**
 - `tests/test_tf2_material_safety.py` — Material safety layer (47 tests)
@@ -137,8 +137,8 @@ The v4.8 material safety layer demonstrates exemplary security design:
 
 ### New Installation
 ```bash
-git clone https://github.com/TF2Autoswap/autoswap.git
-cd autoswap
+git clone https://github.com/TF2Autoswap/main.git
+cd main
 ./run.fish
 ```
 
@@ -159,7 +159,10 @@ silently failed there.
 ### Upgrade from 4.7
 1. Backup `output/` directory (your built mods)
 2. Pull latest code: `git pull`
-3. State files migrate automatically to `.tf2autoswap/`
+3. **Pre-4.8 state files are removed, not migrated.** The old `output/.tf2autoswap/`
+   state (`.acknowledged`, `schema_cache.json`) is deleted on first run, so the
+   risk acknowledgement prompt appears once again. Your built mods in `output/`
+   are untouched.
 4. No cache reset required (format unchanged)
 
 ---
@@ -178,7 +181,7 @@ silently failed there.
 
 ## 🐛 Bug Reports
 
-Report issues at: https://github.com/TF2Autoswap/autoswap/issues
+Report issues at: https://github.com/TF2Autoswap/main/issues
 
 **Include:**
 - OS and Python version
@@ -202,11 +205,12 @@ GPL v3 — see LICENSE file
 
 ## 🔗 Links
 
-- **Repository:** https://github.com/TF2Autoswap/autoswap
-- **Security Audit:** SECURITY_AUDIT_V48.md
+- **Repository:** https://github.com/TF2Autoswap/main
+- **Security Audit:** docs/SECURITY_AUDIT_V48.md
 - **Changelog:** CHANGELOG.md
-- **Development Guide:** DEVELOPMENT.md
-- **Testing Guide:** TESTING.md
+- **Project Context:** docs/PROJECT_CONTEXT.md
+- **Contributing:** docs/CONTRIBUTING.md
+- **Testing Guide:** docs/TESTING.md
 
 ---
 
