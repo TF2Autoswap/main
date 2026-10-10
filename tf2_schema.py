@@ -182,7 +182,7 @@ class ItemInfo:
 
 
 def _need_vdf():
-    """
+    r"""
     Return the 'vdf' Python library.
 
     VDF (Valve Data Format), also called KeyValues, is a simple text format
@@ -203,6 +203,8 @@ def _need_vdf():
             exist. Install into the project's virtualenv instead:
 
                 python3 -m venv venv && venv/bin/pip install -e .
+            On Windows the second command is instead
+            `venv\Scripts\python -m pip install -e .`.
     """
     try:
         import vdf
@@ -210,7 +212,8 @@ def _need_vdf():
         raise ImportError(
             "The 'vdf' library is required to parse items_game.txt.\n"
             "Install the project dependencies into its virtualenv:\n"
-            "    python3 -m venv venv && venv/bin/pip install -e ."
+            "    python3 -m venv venv && venv/bin/pip install -e .\n"
+            "On Windows use venv\\Scripts\\python -m pip install -e . instead."
         ) from e
     return vdf
 

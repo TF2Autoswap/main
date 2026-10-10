@@ -19,6 +19,15 @@ Versions follow the project's own numbering. Dates are when each cut was made.
   unavailable. On this machine that is the difference between "TF2 not found"
   and finding it in one of seven configured libraries.
 
+- **Dependency errors now name the Windows command** — `get_vpk()` and `_need_vdf()`
+  told every user to run `venv/bin/pip install -e .`, which does not exist on
+  Windows, where the virtualenv interpreter lives in `Scripts` rather than `bin`.
+  Both messages now also give the `venv\Scripts\python -m pip install -e .` form.
+- **Mod manager hint pointed at the wrong menu option** — the mod list finished with
+  "Run interactively — option 3" to remove a mod, but option 3 has been the
+  skin / material swap since 4.8. It now names option 5, where the mod manager
+  actually is.
+
 ### Added
 - **`run.fish`** — a launcher that creates the virtualenv and installs the
   dependencies on first use, then runs the tool with every argument passed

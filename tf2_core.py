@@ -200,7 +200,7 @@ EXTS = [".mdl", ".vvd", ".dx80.vtx", ".dx90.vtx", ".sw.vtx", ".phy"]
 # ---------- setup ----------
 
 def get_vpk():
-    """
+    r"""
     Return the 'vpk' Python library.
 
     VPK (Valve Package) is the archive format Valve uses to store game assets.
@@ -219,6 +219,8 @@ def get_vpk():
             exist. Install into the project's virtualenv instead:
 
                 python3 -m venv venv && venv/bin/pip install -e .
+            On Windows the second command is instead
+            `venv\Scripts\python -m pip install -e .`.
     """
     try:
         import vpk
@@ -226,7 +228,8 @@ def get_vpk():
         raise ImportError(
             "The 'vpk' library is required to read TF2's VPK archives.\n"
             "Install the project dependencies into its virtualenv:\n"
-            "    python3 -m venv venv && venv/bin/pip install -e ."
+            "    python3 -m venv venv && venv/bin/pip install -e .\n"
+            "On Windows use venv\\Scripts\\python -m pip install -e . instead."
         ) from e
     return vpk
 
